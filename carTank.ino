@@ -62,7 +62,7 @@ void loop() {
     if (results.value==0xE0E046B9) { // turn left
       
       motorRIGHT.run(FORWARD);
-      motorLEFT.run(RELEASE);
+      motorLEFT.run(BACKWARD);
     
       Serial.print("turn left \n");
       
@@ -70,7 +70,7 @@ void loop() {
 
     if (results.value==0xE0E0A659) { // trun right
       
-      motorRIGHT.run(RELEASE);
+      motorRIGHT.run(BACKWARD);
       motorLEFT.run(FORWARD);
     
       Serial.print("turn right \n");
@@ -86,22 +86,23 @@ void loop() {
       int go = 50;
     }
 
-      if ((results.value==0xE0E0629F) && (go >= 100)) { // slower
+      if ((results.value==0xE0E0D02F) && (go >= 100)) { // slower
       
-      motorRIGHT.setSpeed(go -= 50);
-      motorLEFT.setSpeed(go -= 50);
+      motorRIGHT.setSpeed(go -= 25);
+      motorLEFT.setSpeed(go -= 25);
       
       Serial.print("SLOWER \n");
       
     } 
 
-    if ((results.value==0xE0E0629E) && (go <= 255)) { // faster
+    if ((results.value==0xE0E0E01F) && (go <= 255)) { // faster
       
-      motorRIGHT.setSpeed(go += 50);
-      motorLEFT.setSpeed(go += 50);
+      motorRIGHT.setSpeed(go += 25);
+      motorLEFT.setSpeed(go += 25);
       
       Serial.print("FASTER \n");
       
     }       
   }
 }
+
