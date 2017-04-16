@@ -1,68 +1,107 @@
-#include <AFMotor.h>
-#include <IRremote.h>
+// Use an old TV remote to control 
+// a vehicle remotely using an IR sensor
 
-AF_DCMotor motorLEFT(3); //AF_DCMotor motor(motor#,frequency)
-AF_DCMotor motorRIGHT(4);
+// The IR decoder file (seperate to this file)
+// will tell you which codes the buttons on 
+// your remote produce. Replace the areas commented
+// in the code below with your codes.
+
+// Make sure to put the 0x in front of your code!
+
+// by woosa for 2017 STEAM students
+
+#include <IRremote.h>
+#include <AFMotor.h>
 
 int RECV_PIN = 2;
-
 IRrecv irrecv(RECV_PIN);
-
 decode_results results;
 
-void setup()
-{
-  Serial.begin(9600);
-  irrecv.enableIRIn(); // Start the receiver
+int go = 50;
 
-  motorLEFT.setSpeed(200); // set the speed between 200 - 255)
-  motorRIGHT.setSpeed(200); // set the speed between 200 - 255)
+AF_DCMotor motorLEFT(4); /* motor is connected to 
+                            number 4 on motor shield */
+AF_DCMotor motorRIGHT(3);
+
+void setup() {
+ Serial.begin(9600); /* set up Serial library at 9600 bps */
+ irrecv.enableIRIn(); /* Start the receiver */
+ 
+ /* tell motors what speed to start when the first button is pushed */
+ 
+ motorRIGHT.setSpeed(go); /* motors won't work below 50 very well */
+ motorRIGHT.run(RELEASE);  /* tells the motor to wait for user */
+ motorLEFT.setSpeed(go);
+ motorLEFT.run(RELEASE);
 }
 
 void loop() {
-  if (irrecv.decode(&results)) // have we received an IR signal?
-  Serial.println(results.value, HEX); // show the code in the serial monitor
-  {
-    
-    switch(results.value)
 
-    {
-
-    // place 0x in front of your IR codes
-
-    case 0xE0E006F9: // forward button pressed
-    Serial.println("Forward");
-    motorLEFT.run(FORWARD);      // turn the left motor on to go forward
-    motorRIGHT.run(FORWARD);     // turn the right motor on to go forward
-    delay(1000);
-    break;
-
-    case 0xE0E08679: // backward button pressed
-    Serial.println("Backward");
-    motorLEFT.run(BACKWARD);    // turn the left motor on to go backward
-    motorRIGHT.run(BACKWARD);   // turn the right motor on to go backward
-    delay(1000);
-
-    case 0xE0E0629D: // stop button pressed
-    Serial.println("Stop");
-    motorLEFT.run(RELEASE);   // turn the left motor off
-    motorRIGHT.run(RELEASE);  // turn the right motor off
-    delay(1000);
-
-    case 0xE0E046B9: // right button pressed
-    Serial.println("Right");
-    motorLEFT.run(FORWARD);   // turn the left motor on to go forward
-    motorRIGHT.run(RELEASE);  // turn the right motor off
-    delay(1000);
-    
-    case 0xE0E0A659: // left button pressed
-    Serial.println("Left");
-    motorLEFT.run(RELEASE);   // turn the left motor off
-    motorRIGHT.run(FORWARD);  // turn the right motor on to go forward
-    delay(1000);
-    
+  if (irrecv.decode(&results)) {
+    Serial.println(results.value, HEX);
     irrecv.resume(); // Receive the next value
+
+    if (results.value==0xE0E006F9){ // move forward
+      
+      motorRIGHT.run(FORWARD);
+      motorLEFT.run(FORWARD);
+    
+      Serial.print("move forward \n");
+      
+    }
+
+    if (results.value==0xE0E08679){ // move backward
+
+      motorRIGHT.run(BACKWARD);
+      motorLEFT.run(BACKWARD);
+    
+      Serial.print("move backward \n");
+      
+    }
+
+    if (results.value==0xE0E046B9) { // turn left
+      
+      motorRIGHT.run(FORWARD);
+      motorLEFT.run(RELEASE);
+    
+      Serial.print("turn left \n");
+      
+    }
+
+    if (results.value==0xE0E0A659) { // trun right
+      
+      motorRIGHT.run(RELEASE);
+      motorLEFT.run(FORWARD);
+    
+      Serial.print("turn right \n");
+     
+    }
+
+    if (results.value==0xE0E0629D) { // stop
+      
+      motorRIGHT.run(RELEASE);
+      motorLEFT.run(RELEASE);
+    
+      Serial.print("stop \n");
+      int go = 50;
+    }
+
+      if ((results.value==0xE0E0629F) && (go >= 100)) { // slower
+      
+      motorRIGHT.setSpeed(go -= 50);
+      motorLEFT.setSpeed(go -= 50);
+      
+      Serial.print("SLOWER \n");
+      
+    } 
+
+    if ((results.value==0xE0E0629E) && (go <= 255)) { // faster
+      
+      motorRIGHT.setSpeed(go += 50);
+      motorLEFT.setSpeed(go += 50);
+      
+      Serial.print("FASTER \n");
+      
+    }       
   }
-  delay(100);
-}
 }
