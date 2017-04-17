@@ -40,7 +40,13 @@ void loop() {
   if (irrecv.decode(&results)) {
     Serial.println(results.value, HEX);
     irrecv.resume(); // Receive the next value
-
+    
+    // replace the E0E006F9 with the 
+    // code for FORWARD on your remote
+    
+    // MAKE SURE TO HAVE 0x at the 
+    // start of your remote codes
+    
     if (results.value==0xE0E006F9){ // move forward
       
       motorRIGHT.run(FORWARD);
@@ -49,7 +55,10 @@ void loop() {
       Serial.print("move forward \n");
       
     }
-
+    
+    // replace the E0E08679 with the 
+    // code for BACKWARD on your remote
+    
     if (results.value==0xE0E08679){ // move backward
 
       motorRIGHT.run(BACKWARD);
@@ -58,7 +67,10 @@ void loop() {
       Serial.print("move backward \n");
       
     }
-
+    
+    // replace the E0E046B9 with the 
+    // code for LEFT on your remote
+    
     if (results.value==0xE0E046B9) { // turn left
       
       motorRIGHT.run(FORWARD);
@@ -67,6 +79,9 @@ void loop() {
       Serial.print("turn left \n");
       
     }
+    
+    // replace the E0E0A659 with the 
+    // code for RIGHT on your remote
 
     if (results.value==0xE0E0A659) { // trun right
       
@@ -76,6 +91,9 @@ void loop() {
       Serial.print("turn right \n");
      
     }
+    
+    // replace the E0E0629D with the 
+    // code for STOP on your remote
 
     if (results.value==0xE0E0629D) { // stop
       
@@ -85,6 +103,9 @@ void loop() {
       Serial.print("stop \n");
       int go = 50;
     }
+    
+    // replace the E0E0D02F with the 
+    // code for SLOWER on your remote
 
       if ((results.value==0xE0E0D02F) && (go >= 100)) { // slower
       
@@ -95,6 +116,9 @@ void loop() {
       
     } 
 
+    // replace the E0E0E01F with the 
+    // code for FASTER on your remote
+    
     if ((results.value==0xE0E0E01F) && (go <= 255)) { // faster
       
       motorRIGHT.setSpeed(go += 25);
